@@ -43,7 +43,7 @@ body{
 }
 
 .text-field {
-  @apply flex flex-col gap-[12px] max-w-[325px] w-full;
+  @apply flex flex-col gap-[12px] max-w-[325px] w-full overflow-hidden;
 }
 
 .dropdown {

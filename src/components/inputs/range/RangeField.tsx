@@ -120,6 +120,7 @@ export const RangeField = ({
 					onChange={(event) => {
 						inputProps.onChange(event);
 						setTermValue(event.target.value);
+						onChangeTermValue(+event.target.value);
 					}}
 					className={clsx(inputProps?.className, 'range')}
 				/>

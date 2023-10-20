@@ -250,7 +250,6 @@ isSubmitting и inputRef, в компоненте с кнопкой мы зад�
 				<RangeField
 					label="Cрок"
 					onChangeTermValue={async (value) => {
-						await formik.setFieldValue('term', value);
 						await formik.setFieldValue(
 							'payment',
 							getPayment(
@@ -258,6 +257,7 @@ isSubmitting и inputRef, в компоненте с кнопкой мы зад�
 								value || 0,
 							),
 						);
+						await formik.setFieldValue('term', value);
 					}}
 					rangeArray={['год', 'года', 'лет']}
 					error={formik.errors.term}
@@ -283,12 +283,7 @@ isSubmitting и inputRef, в компоненте с кнопкой мы зад�
 						type: 'range',
 						placeholder: 'Укажите сумму',
 						name: 'payment',
-						value:
-							formik.values.payment ||
-							getPayment(
-								getValueDivisionByPercent(formik.values.price, formik.values.contribution),
-								formik.values.term || 0,
-							),
+						value: formik.values.payment || 0,
 						onChange: formik.handleChange,
 						max: getPayment(getValueDivisionByPercent(formik.values.price, formik.values.contribution), 4),
 						min: getPayment(getValueDivisionByPercent(formik.values.price, formik.values.contribution), 30),
