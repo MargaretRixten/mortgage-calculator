@@ -1,0 +1,14 @@
+@mixin scrollbar() {
+  &::-webkit-scrollbar-track {
+    @apply bg-none;
+  }
+
+  &::-webkit-scrollbar {
+    @apply w-1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    @apply rounded-[20px] border-[6px] border-solid border-baseScroll h-10;
+    //background-color: #7c4894;
+  }
+}

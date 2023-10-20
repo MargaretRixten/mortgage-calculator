@@ -1,5 +1,7 @@
-export function devisionByRank(: string) {
-  const parts = x.toString().split(".");
-  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  return parts.join(".");
+// Маска для расстановки запятых в инпутах
+export function divisionByRank(number: any) {
+	return number
+		.toString()
+		.replace(/\D/g, '')
+		.replace(/(\d)(?=(\d{3})+$)/g, '$1,');
 }

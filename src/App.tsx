@@ -1,11 +1,11 @@
-import { MortgageCalcPage } from "./pages/ MortgageCalcPage.tsx";
+import { MainRoutes } from './routes/mainRoutes/MainRoutes';
 
 function App() {
-  return (
-    <>
-      <MortgageCalcPage />
-    </>
-  );
+	return (
+		<>
+			<MainRoutes />
+		</>
+	);
 }
 
 export default App;

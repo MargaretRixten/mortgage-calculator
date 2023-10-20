@@ -1,12 +1,12 @@
-import { ChangeEvent, InputHTMLAttributes, PropsWithRef, useId, useState } from 'react';
+import { ChangeEvent, InputHTMLAttributes, PropsWithRef, useEffect, useId, useMemo, useState } from 'react';
 import clsx from 'clsx';
-
-import './RangeField.scss';
-import { divisionByRank } from '../../../utils/divisionByRank.ts';
-import { Icon } from '../../icon/Icon.tsx';
-import { EIcons } from '../../../enums/icons.enum.ts';
-import { getRangeProgressBar } from '../../../utils/getRangeProgressBar.tsx';
-import { getDeclination } from '../../../utils/getDeclination.ts';
+import { Icon } from '../../icon/Icon';
+import { Warning } from '../../warning/Warning';
+import { Error } from '../../error/Error';
+import { EIcons } from '../../../enums/icons.enum';
+import { getRangeProgressBar } from '../../../utils/getRangeProgressBar';
+import { getDeclination } from '../../../utils/getDeclination';
+import { divisionByRank } from '../../../utils/divisionByRank';
 
 export interface IInputProps extends PropsWithRef<InputHTMLAttributes<HTMLInputElement>> {
 	type: string;
@@ -19,12 +19,12 @@ export interface IInputProps extends PropsWithRef<InputHTMLAttributes<HTMLInputE
 	step: number;
 }
 
-export type TTextFieldParams = {
+export type TRangeFieldParams = {
 	className?: string;
 	label?: string;
 	error?: string;
-	info?: string;
-	onChangeTermValue: (option: number) => void;
+	warning?: string;
+	onChangeTermValue: (option: number | null) => void;
 	iconName?: EIcons;
 	inputProps: IInputProps;
 	rangeArray?: string[];
@@ -35,58 +35,60 @@ export const RangeField = ({
 	label,
 	error,
 	inputProps,
-	info,
+	warning,
 	iconName,
 	onChangeTermValue,
 	rangeArray,
-}: TTextFieldParams) => {
+}: TRangeFieldParams) => {
 	const id = useId();
 
-	const [termValue, setTermValue] = useState<string | number>(inputProps.min || '');
+	const [termValue, setTermValue] = useState<string | number>('');
 
-	const progressWidth = getRangeProgressBar(inputProps.value, inputProps.min, inputProps.max);
+	/* Не успевает попасть в значение termValue */
+	useEffect(() => {
+		setTermValue(inputProps.value);
+	}, [inputProps.value]);
 
+	/* Значение для нахождения value для обработки состояния прогресса */
+	const inputRange = useMemo(() => {
+		switch (true) {
+			case inputProps.value > inputProps.max: {
+				return inputProps.max;
+			}
+			case !inputProps.value: {
+				return inputProps.min;
+			}
+			default:
+				return inputProps.value;
+		}
+	}, [inputProps.value]);
+
+	const progressWidth = getRangeProgressBar(inputRange, inputProps.min, inputProps.max);
+
+	/* Функция для изменения поля с числом */
 	const handleTermValue = (event: ChangeEvent<HTMLInputElement>) => {
 		const newValue = event.target.value.split(',').join('');
-
-		switch (true) {
-			case +newValue < (inputProps.min || 0): {
-				onChangeTermValue(inputProps.min || 0);
-				break;
-			}
-
-			case +newValue > inputProps!.max!: {
-				onChangeTermValue(inputProps.max);
-				break;
-			}
-			default: {
-				onChangeTermValue(+newValue);
-				break;
-			}
+		if (!newValue) {
+			onChangeTermValue(null);
+		} else {
+			onChangeTermValue(+newValue);
 		}
 		setTermValue(newValue);
 	};
 
-	const handleRangeTitle = () => {
+	/* Функция для подстановки либо слов, либо картинки, либо ничего*/
+	const handleRangeTitle = (count: number) => {
 		switch (true) {
 			case !!rangeArray?.length: {
-				return getDeclination(inputProps?.min, rangeArray!);
+				return getDeclination(count, rangeArray!);
 			}
 			case !!iconName: {
-				return (
-					<Icon
-						size={10}
-						name={iconName!}
-						className="text-white top-2/4 right-[-20px] absolute -translate-y-2/4"
-					/>
-				);
+				return <Icon size={10} name={iconName!} className="text-white" />;
 			}
 			default:
 				return null;
 		}
 	};
-
-	console.log('getDeclination', getDeclination(inputProps?.min, ['год', 'года', 'лет']));
 
 	return (
 		<div className={clsx(className, 'text-field')}>
@@ -97,7 +99,7 @@ export const RangeField = ({
 			)}
 			<div className="relative">
 				<input
-					className="input-field"
+					className={clsx('input-field', { '!border-baseError': error })}
 					value={divisionByRank(termValue) || ''}
 					type="text"
 					onChange={handleTermValue}
@@ -114,9 +116,9 @@ export const RangeField = ({
 				<input
 					id={id}
 					{...inputProps}
-					value={inputProps?.value || inputProps?.min}
+					value={inputProps.value}
 					onChange={(event) => {
-						inputProps!.onChange!(event);
+						inputProps.onChange(event);
 						setTermValue(event.target.value);
 					}}
 					className={clsx(inputProps?.className, 'range')}
@@ -124,20 +126,15 @@ export const RangeField = ({
 				<div className="progress" style={{ width: `${progressWidth}%` }} />
 			</div>
 			<div className="range-interval">
-				<span className="relative">
-					{divisionByRank(inputProps?.min)} {handleRangeTitle()}
+				<span className="flex items-center gap-3">
+					{divisionByRank(inputProps?.min)} {handleRangeTitle(inputProps?.min)}
 				</span>
-				<span className="relative">
-					{divisionByRank(inputProps?.max)} {handleRangeTitle()}
+				<span className="flex items-center gap-3">
+					{divisionByRank(inputProps?.max)} {handleRangeTitle(inputProps?.max)}
 				</span>
 			</div>
-			{info && (
-				<div className="tooltip">
-					<Icon className="text-accentPrimary" size={16} name={EIcons.Tooltip} />
-					{info}
-				</div>
-			)}
-			{error && <div className="text-rose-400 text-sm">{error}</div>}
+			{warning && <Warning warning={warning} />}
+			{error && <Error error={error} />}
 		</div>
 	);
 };

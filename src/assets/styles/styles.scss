@@ -2,6 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@import "mixins";
+
+html{
+  @apply overflow-x-hidden;
+  @include scrollbar();
+}
+
+body{
+  @apply bg-baseBg h-screen overflow-x-hidden;
+}
+
+* {
+  font-family: 'Roboto', sans-serif;
+}
+
 .container {
-  @apply max-w-[1130px] my-0 mx-auto
+  @apply max-w-[1130px] my-0 mx-auto px-4;
+}
+
+.input-field {
+  @apply flex flex-col items-start py-3 pl-6 pr-14 rounded-[6px] border border-solid border-baseStroke bg-baseInput h-[52px] text-white text-[16px] leading-[22.4px] font-normal w-full outline-none overflow-hidden overflow-ellipsis whitespace-nowrap;
+}
+
+.text-label {
+  @apply text-white text-[16px] leading-[22.4px] font-medium;
+}
+
+.text-option {
+  font-family: 'Inter', sans-serif;
+  @apply text-white text-[14px] font-normal leading-[19.6px];
+}
+
+.text-button{
+  font-family: 'Inter', sans-serif;
+  @apply text-[16px] font-medium leading-[22.4px];
+}
+
+.text-field {
+  @apply flex flex-col gap-[12px] max-w-[325px] w-full;
+}
+
+.dropdown {
+  @apply flex flex-col gap-[12px] max-w-[325px] w-full;
+}
+
+.active-dropdown {
+  @apply border border-solid border-accentPrimary;
+}
+
+.dropdown-menu {
+  @apply flex flex-col items-start px-0 w-full absolute z-10 top-[60px] left-0 rounded-[8px] border border-solid border-baseStroke bg-baseSecondary max-h-[216px] overflow-y-auto overflow-x-hidden ;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.16);
+
+  li:nth-child(1) {
+    @apply pt-2;
+  }
+
+  @include scrollbar();
+}
+
+.dropdown-item {
+  @apply flex items-center px-2.5 py-4 justify-between w-full cursor-pointer hover:bg-baseStroke;
+}
+
+.form-control {
+  @apply grid mt-11 justify-between xl:gap-x-[66px] xl:gap-y-6 xl:justify-start xl:mt-8;
+  grid-template-columns: repeat(auto-fit, minmax(325px, 325px));
 }

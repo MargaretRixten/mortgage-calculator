@@ -1,0 +1,9 @@
+.input-search {
+  @apply border border-solid border-baseStroke rounded-[5px] bg-baseInput w-full outline-none py-2 pl-12 pr-4 text-white;
+  &:focus {
+    @apply border border-solid border-accentPrimary;
+  }
+}
+.icon-search {
+  @apply -translate-y-1/2 absolute top-1/2 left-4 text-textSecondary;
+}

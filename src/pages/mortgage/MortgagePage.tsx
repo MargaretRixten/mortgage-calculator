@@ -1,15 +1,17 @@
-import {CreditCalc} from "../module/CreditCalc";
-import {MainLayout} from "../layouts/main-layout/MainLayout";
+import { MainLayout } from '../../layouts/main-layout/MainLayout';
+import { FooterMortgageForm } from '../../module/mortgageForm/footerForm/FooterMortgageForm';
+import { MortgageForm } from '../../module/mortgageForm/MortgageForm';
+import './MortgagePage.scss';
 
-export const MortgageCalcPage = () => {
-    return (
-        <MainLayout>
-            <div className="container">
-                <h1 className="text-5xl text-white">
-                    Рассчитайте ипотеку быстро и просто
-                </h1>
-                <CreditCalc />
-            </div>
-        </MainLayout>
-    );
+export const MortgagePage = () => {
+	return (
+		<MainLayout footer={<FooterMortgageForm />}>
+			<div className="mortgage-page">
+				<div className="container">
+					<h1>Рассчитайте ипотеку быстро и просто</h1>
+					<MortgageForm />
+				</div>
+			</div>
+		</MainLayout>
+	);
 };

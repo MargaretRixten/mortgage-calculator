@@ -1,19 +1,20 @@
-import { InputHTMLAttributes, PropsWithRef, useId } from 'react';
+import { ChangeEvent, InputHTMLAttributes, PropsWithRef, useId } from 'react';
 import clsx from 'clsx';
-import { EIcons } from '../../enums/icons.enum.ts';
-import { Icon } from '../icon/Icon.tsx';
-import { divisionByRank } from '../../utils/divisionByRank.ts';
-import { Error } from '../error/Error.tsx';
+import { Icon } from '../../icon/Icon';
+import { Error } from '../../error/Error';
+import { EIcons } from '../../../enums/icons.enum';
+import { divisionByRank } from '../../../utils/divisionByRank';
 
 export type TTextFieldParams = {
 	className?: string;
 	label?: string;
 	error?: string;
 	iconName?: EIcons;
+	onChangeTextField: (value: ChangeEvent<HTMLInputElement>) => void;
 	inputProps?: PropsWithRef<InputHTMLAttributes<HTMLInputElement>>;
 };
 
-export const TextField = ({ className, label, error, inputProps, iconName }: TTextFieldParams) => {
+export const TextField = ({ className, label, error, inputProps, iconName, onChangeTextField }: TTextFieldParams) => {
 	const id = useId();
 	return (
 		<div className={clsx(className, 'text-field')}>
@@ -26,8 +27,9 @@ export const TextField = ({ className, label, error, inputProps, iconName }: TTe
 				<input
 					{...inputProps}
 					id={id}
+					onChange={onChangeTextField}
 					value={divisionByRank(inputProps?.value) || ''}
-					className={clsx(inputProps?.className, 'input-field')}
+					className={clsx(inputProps?.className, 'input-field', { '!border-baseError': error })}
 				/>
 				{iconName && (
 					<Icon

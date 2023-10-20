@@ -1,35 +1,30 @@
-import { ChangeEvent, InputHTMLAttributes, PropsWithRef, useEffect, useId, useState } from 'react';
-import { EIcons } from '../../enums/icons.enum.ts';
+import { ChangeEvent, useEffect, useId, useState } from 'react';
 import clsx from 'clsx';
-import { Icon } from '../icon/Icon.tsx';
-
-export interface IInputProps extends PropsWithRef<InputHTMLAttributes<HTMLInputElement>> {
-	type: string;
-	placeholder: string;
-	name: string;
-	value: number;
-	onChange: (event: ChangeEvent<HTMLInputElement>) => void;
-}
+import { Icon } from '../../icon/Icon';
+import { EIcons } from '../../../enums/icons.enum';
+import './SearchField.scss';
 
 export type TSearchFieldParams = {
 	className?: string;
 	label?: string;
 	error?: string;
 	info?: string;
-	onChangeTermValue?: (option: number) => void;
+	onSearch: (value: string | null) => void;
 	iconName?: EIcons;
-	// inputProps: IInputProps;
 };
 
-export const SearchField = ({ label, iconName, className }: TSearchFieldParams) => {
+export const SearchField = ({ label, iconName, className, onSearch }: TSearchFieldParams) => {
 	const id = useId();
 
 	const [searchValue, setSearchValue] = useState<string | null>(null);
 
+	/* Имитация debounce */
 	useEffect(() => {
 		if (searchValue === null) return;
 
-		const timer = setTimeout(() => {}, 800);
+		const timer = setTimeout(() => {
+			onSearch(searchValue);
+		}, 800);
 
 		return () => {
 			clearInterval(timer);
@@ -42,15 +37,15 @@ export const SearchField = ({ label, iconName, className }: TSearchFieldParams) 
 	};
 
 	return (
-		<div className={clsx(className, 'text-field')}>
+		<div className={clsx(className, 'text-field bg-baseSecondary')}>
 			{label && (
 				<label htmlFor={id} className="block text-label">
 					{label}
 				</label>
 			)}
 			<div className="relative">
-				<input id={id} className={clsx('input-field')} value={searchValue || ''} onChange={handleSearch} />
-				{iconName && <Icon size={20} name={iconName} className="search-icon" />}
+				<input id={id} className={clsx('input-search')} value={searchValue || ''} onChange={handleSearch} />
+				{iconName && <Icon size={20} name={iconName} className="icon-search" />}
 			</div>
 		</div>
 	);

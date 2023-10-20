@@ -1,11 +1,11 @@
 import { InputHTMLAttributes, PropsWithRef, useId, useState } from 'react';
 import clsx from 'clsx';
-import { EIcons } from '../../enums/icons.enum.ts';
-import { Icon } from '../icon/Icon.tsx';
-import { IOption } from '../../interfaces';
-import useOutsideClick from '../../hooks/useOutsideClick.tsx';
-import { SearchField } from './search/SearchField.tsx';
-import { Error } from '../error/Error.tsx';
+import { EIcons } from '../../../enums/icons.enum';
+import { Icon } from '../../icon/Icon';
+import { IOption } from '../../../interfaces';
+import useOutsideClick from '../../../hooks/useOutsideClick';
+import { SearchField } from '../search/SearchField';
+import { Error } from '../../error/Error';
 
 export type TSelectFieldParams = {
 	className?: string;
@@ -31,6 +31,7 @@ export const SelectField = ({ className, label, error, inputProps, options, onCh
 		setData(options);
 	};
 
+	/* клик вне компонента */
 	const wrapperRef = useOutsideClick(() => {
 		handleClose();
 	});
@@ -61,6 +62,7 @@ export const SelectField = ({ className, label, error, inputProps, options, onCh
 						{...inputProps}
 						className={clsx('input-field cursor-pointer', {
 							'active-dropdown': isShown,
+							'!border-baseError': error,
 						})}
 						onClick={handleShow}
 					/>
@@ -100,13 +102,15 @@ export const SelectField = ({ className, label, error, inputProps, options, onCh
 												>
 													<span className="text-option">{option}</span>
 
-													<Icon
-														size={20}
-														name={EIcons.Checked}
-														className={clsx('text-white', {
-															hidden: option !== inputProps?.value,
-														})}
-													/>
+													<div>
+														<Icon
+															size={20}
+															name={EIcons.Checked}
+															className={clsx('text-white', {
+																hidden: option !== inputProps?.value,
+															})}
+														/>
+													</div>
 												</li>
 											))}
 										</>

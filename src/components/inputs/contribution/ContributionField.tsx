@@ -1,12 +1,16 @@
-import { ChangeEvent, InputHTMLAttributes, PropsWithRef, useId, useState } from 'react';
+import { ChangeEvent, InputHTMLAttributes, PropsWithRef, useEffect, useId, useState } from 'react';
 import clsx from 'clsx';
 
-import './RangeField.scss';
-import { divisionByRank } from '../../../utils/divisionByRank.ts';
-import { Icon } from '../../icon/Icon.tsx';
-import { EIcons } from '../../../enums/icons.enum.ts';
-import { getRangeProgressBar } from '../../../utils/getRangeProgressBar.tsx';
-import { getDeclination } from '../../../utils/getDeclination.ts';
+import { divisionByRank } from '../../../utils/divisionByRank';
+import { Icon } from '../../icon/Icon';
+import { EIcons } from '../../../enums/icons.enum';
+import { getRangeProgressBar } from '../../../utils/getRangeProgressBar';
+import './ContributionField.scss';
+import { InfoContribution } from '../../infoContribution/InfoContribution';
+import { Error } from '../../error/Error';
+import { Warning } from '../../warning/Warning';
+import { getValueDivisionByPercent } from '../../../utils/getValueDivisionByPercent';
+import { findPercentage } from '../../../utils/findPercentage';
 
 export interface IInputProps extends PropsWithRef<InputHTMLAttributes<HTMLInputElement>> {
 	type: string;
@@ -19,86 +23,63 @@ export interface IInputProps extends PropsWithRef<InputHTMLAttributes<HTMLInputE
 	step: number;
 }
 
-export type TTextFieldParams = {
+export type TContributionFieldParams = {
+	price: number;
 	className?: string;
 	label?: string;
 	error?: string;
-	info?: string;
 	onChangeTermValue: (option: number) => void;
 	iconName?: EIcons;
 	inputProps: IInputProps;
-	rangeArray?: string[];
 };
 
-export const RangeField = ({
+export const ContributionField = ({
 	className,
 	label,
 	error,
 	inputProps,
-	info,
 	iconName,
 	onChangeTermValue,
-	rangeArray,
-}: TTextFieldParams) => {
+	price,
+}: TContributionFieldParams) => {
 	const id = useId();
 
-	const [termValue, setTermValue] = useState<string | number>(inputProps.min || '');
+	const [termValue, setTermValue] = useState<string | number>('');
 
-	const progressWidth = getRangeProgressBar(inputProps.value, inputProps.min, inputProps.max);
+	useEffect(() => {
+		if (price < +termValue) {
+			onChangeTermValue(inputProps.max);
+			setTermValue(getValueDivisionByPercent(price, inputProps.max));
+			return;
+		}
+		setTermValue(getValueDivisionByPercent(price, inputProps.value));
+	}, [price, inputProps.max]);
+
+	const progressWidth = getRangeProgressBar(
+		inputProps.value > inputProps.max ? inputProps.max : inputProps.value,
+		inputProps.min,
+		inputProps.max,
+	);
 
 	const handleTermValue = (event: ChangeEvent<HTMLInputElement>) => {
 		const newValue = event.target.value.split(',').join('');
 
-		switch (true) {
-			case +newValue < (inputProps.min || 0): {
-				onChangeTermValue(inputProps.min || 0);
-				break;
-			}
-
-			case +newValue > inputProps!.max!: {
-				onChangeTermValue(inputProps.max);
-				break;
-			}
-			default: {
-				onChangeTermValue(+newValue);
-				break;
-			}
-		}
+		onChangeTermValue(findPercentage(price, +newValue));
 		setTermValue(newValue);
 	};
-
-	const handleRangeTitle = () => {
-		switch (true) {
-			case !!rangeArray?.length: {
-				return getDeclination(inputProps?.min, rangeArray!);
-			}
-			case !!iconName: {
-				return (
-					<Icon
-						size={10}
-						name={iconName!}
-						className="text-white top-2/4 right-[-20px] absolute -translate-y-2/4"
-					/>
-				);
-			}
-			default:
-				return null;
-		}
-	};
-
-	console.log('getDeclination', getDeclination(inputProps?.min, ['год', 'года', 'лет']));
 
 	return (
 		<div className={clsx(className, 'text-field')}>
 			{label && (
-				<label htmlFor={id} className="block text-label">
+				<label htmlFor={id} className="flex items-center gap-1.5 text-label">
 					{label}
+					<InfoContribution />
 				</label>
 			)}
 			<div className="relative">
 				<input
-					className="input-field"
-					value={divisionByRank(termValue) || ''}
+					className={clsx('input-field', { '!border-baseError': error })}
+					value={divisionByRank(termValue)}
 					type="text"
 					onChange={handleTermValue}
 				/>
@@ -114,30 +95,26 @@ export const RangeField = ({
 				<input
 					id={id}
 					{...inputProps}
-					value={inputProps?.value || inputProps?.min}
+					value={inputProps?.value || inputProps.min}
 					onChange={(event) => {
-						inputProps!.onChange!(event);
-						setTermValue(event.target.value);
+						inputProps.onChange(event);
+						setTermValue(getValueDivisionByPercent(price, +event.target.value));
 					}}
 					className={clsx(inputProps?.className, 'range')}
 				/>
 				<div className="progress" style={{ width: `${progressWidth}%` }} />
 			</div>
-			<div className="range-interval">
-				<span className="relative">
-					{divisionByRank(inputProps?.min)} {handleRangeTitle()}
-				</span>
-				<span className="relative">
-					{divisionByRank(inputProps?.max)} {handleRangeTitle()}
-				</span>
-			</div>
-			{info && (
-				<div className="tooltip">
-					<Icon className="text-accentPrimary" size={16} name={EIcons.Tooltip} />
-					{info}
-				</div>
-			)}
-			{error && <div className="text-rose-400 text-sm">{error}</div>}
+
+			<Warning
+				warning={
+					<p>
+						Cумма финансирования:<strong>{divisionByRank(termValue)}</strong> ₪ <br /> Процент
+						финансирования:
+						<strong>{inputProps.value}%</strong>
+					</p>
+				}
+			/>
+			{error && <Error error={error} />}
 		</div>
 	);
 };
