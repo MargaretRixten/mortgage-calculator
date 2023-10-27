@@ -1,8 +1,6 @@
 # React + TypeScript + Vite
 
-# Создание калькулятора ипотеки 
-
-Создание калькулятора ипотеки наподобие [Сбербанка](https://domclick.ru/ipoteka/calculator?utm_referrer=https%3A%2F%2Fwww.google.com%2F)
+# Создание калькулятора ипотеки наподобие [Сбербанка](https://domclick.ru/ipoteka/calculator?utm_referrer=https%3A%2F%2Fwww.google.com%2F)
 
 [Демо](https://margaretrixten.github.io/bankimonline/) моего калькулятора
 
